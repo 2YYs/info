@@ -3,5 +3,5 @@ matplotlib
 seaborn
 plotly
 ipywidgets
+jupyter-book>=0.12
 jupyter_sphinx
-jupyter-book

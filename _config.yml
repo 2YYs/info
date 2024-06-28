@@ -17,6 +17,7 @@ sphinx:
     - sphinx.ext.intersphinx
     - jupyter_sphinx
     - nbsphinx
+    - sphinx_togglebutton
 # Define the name of the latex output file for PDF builds
 latex:
   latex_documents:

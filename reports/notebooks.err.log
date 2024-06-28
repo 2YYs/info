@@ -16,23 +16,114 @@ Traceback (most recent call last):
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+import plotly.graph_objects as go
 
 # Load the datasets
-dataset1 = pd.read_csv('immigration_statistics_us.csv', encoding='ISO-8859-1')
-dataset2 = pd.read_csv('minimum_wage_us.csv', encoding='ISO-8859-1')
-# dataset3 = pd.read_csv('unemployment_rate_data.csv', encoding='ISO-8859-1')
-dataset3 = pd.read_csv('unemployment_rate_data_corrected.csv', encoding='ISO-8859-1')
+immigration_data = pd.read_csv('immigration_statistics_us.csv')
+unemployment_data = pd.read_csv('unemployment_rate_data.csv')
+
+# Hernoem de kolommen voor consistentie
+immigration_data = immigration_data.rename(columns={
+    'ï»¿Year': 'Year',  # Fix the column name here
+    'Immigrants Obtaining Lawful Permanent Resident Status': 'Legal_Immigrants',
+    'Noncitizen Apprehensions': 'Illegal_Immigrants'
+})
+
+unemployment_data = unemployment_data.rename(columns={
+    'date': 'Year',
+    'unrate': 'Unemployment_Rate'
+})
+
+# Extract year from the 'Year' column in unemployment_data
+unemployment_data['Year'] = pd.to_datetime(unemployment_data['Year']).dt.year
+
+# Verwijder komma's en converteer kolommen naar numeriek type in immigration_data
+immigration_data['Legal_Immigrants'] = immigration_data['Legal_Immigrants'].str.replace(',', '').astype(int)
+immigration_data['Illegal_Immigrants'] = immigration_data['Illegal_Immigrants'].str.replace(',', '').astype(int)
+
+# Mergen van datasets op basis van het jaar
+merged_data = pd.merge(immigration_data, unemployment_data, on='Year')
+
+# Creëer de figuur
+fig = go.Figure()
+
+# Voeg de lijn voor legale immigranten toe
+fig.add_trace(go.Scatter(
+    x=merged_data['Year'],
+    y=merged_data['Legal_Immigrants'],
+    mode='lines+markers',
+    name='Legal Immigrants',
+    yaxis='y1'
+))
+
+# Voeg de lijn voor illegale immigranten toe
+fig.add_trace(go.Scatter(
+    x=merged_data['Year'],
+    y=merged_data['Illegal_Immigrants'],
+    mode='lines+markers',
+    name='Illegal Immigrants',
+    yaxis='y2'
+))
+
+# Voeg het staafdiagram voor werkloosheid toe
+fig.add_trace(go.Bar(
+    x=merged_data['Year'],
+    y=merged_data['Unemployment_Rate'],
+    name='Unemployment Rate',
+    yaxis='y3',
+    opacity=0.6,
+    hovertemplate='%{x}, %{y:.1f}%'  # Voeg een procentteken toe aan de hoverinformatie
+))
+
+# Update layout om de verschillende assen te ondersteunen
+fig.update_layout(
+    title='Immigration and Unemployment Statistics Over Time',
+    xaxis=dict(title='Year'),
+    yaxis=dict(
+        title='Legal Immigrants',
+        titlefont=dict(color='blue'),
+        tickfont=dict(color='blue')
+    ),
+    yaxis2=dict(
+        title='Illegal Immigrants',
+        titlefont=dict(color='red'),
+        tickfont=dict(color='red'),
+        overlaying='y',
+        side='right'
+    ),
+    yaxis3=dict(
+        title='Unemployment Rate (%)',
+        titlefont=dict(color='green'),
+        tickfont=dict(color='green'),
+        tickformat='.1f',  # Voeg een procentteken toe aan de labels
+        anchor='free',
+        overlaying='y',
+        side='right',
+        position=1
+    ),
+    legend=dict(x=0, y=1.1),
+    height=600  # Adjust height here
+)
+
+# Toon de figuur
+fig.show()
+
+
 ------------------
 
 
 [0;31m---------------------------------------------------------------------------[0m
 [0;31mFileNotFoundError[0m                         Traceback (most recent call last)
-Cell [0;32mIn[1], line 9[0m
-[1;32m      7[0m dataset2 [38;5;241m=[39m pd[38;5;241m.[39mread_csv([38;5;124m'[39m[38;5;124mminimum_wage_us.csv[39m[38;5;124m'[39m, encoding[38;5;241m=[39m[38;5;124m'[39m[38;5;124mISO-8859-1[39m[38;5;124m'[39m)
-[1;32m      8[0m [38;5;66;03m# dataset3 = pd.read_csv('unemployment_rate_data.csv', encoding='ISO-8859-1')[39;00m
-[0;32m----> 9[0m dataset3 [38;5;241m=[39m [43mpd[49m[38;5;241;43m.[39;49m[43mread_csv[49m[43m([49m[38;5;124;43m'[39;49m[38;5;124;43munemployment_rate_data_corrected.csv[39;49m[38;5;124;43m'[39;49m[43m,[49m[43m [49m[43mencoding[49m[38;5;241;43m=[39;49m[38;5;124;43m'[39;49m[38;5;124;43mISO-8859-1[39;49m[38;5;124;43m'[39;49m[43m)[49m
+Cell [0;32mIn[16], line 6[0m
+[1;32m      4[0m [38;5;66;03m# Load the datasets[39;00m
+[1;32m      5[0m immigration_data [38;5;241m=[39m pd[38;5;241m.[39mread_csv([38;5;124m'[39m[38;5;124mimmigration_statistics_us.csv[39m[38;5;124m'[39m)
+[0;32m----> 6[0m unemployment_data [38;5;241m=[39m [43mpd[49m[38;5;241;43m.[39;49m[43mread_csv[49m[43m([49m[38;5;124;43m'[39;49m[38;5;124;43munemployment_rate_data.csv[39;49m[38;5;124;43m'[39;49m[43m)[49m
+[1;32m      8[0m [38;5;66;03m# Hernoem de kolommen voor consistentie[39;00m
+[1;32m      9[0m immigration_data [38;5;241m=[39m immigration_data[38;5;241m.[39mrename(columns[38;5;241m=[39m{
+[1;32m     10[0m     [38;5;124m'[39m[38;5;124mï»¿Year[39m[38;5;124m'[39m: [38;5;124m'[39m[38;5;124mYear[39m[38;5;124m'[39m,  [38;5;66;03m# Fix the column name here[39;00m
+[1;32m     11[0m     [38;5;124m'[39m[38;5;124mImmigrants Obtaining Lawful Permanent Resident Status[39m[38;5;124m'[39m: [38;5;124m'[39m[38;5;124mLegal_Immigrants[39m[38;5;124m'[39m,
+[1;32m     12[0m     [38;5;124m'[39m[38;5;124mNoncitizen Apprehensions[39m[38;5;124m'[39m: [38;5;124m'[39m[38;5;124mIllegal_Immigrants[39m[38;5;124m'[39m
+[1;32m     13[0m })
 
 File [0;32m/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/pandas/io/parsers/readers.py:912[0m, in [0;36mread_csv[0;34m(filepath_or_buffer, sep, delimiter, header, names, index_col, usecols, dtype, engine, converters, true_values, false_values, skipinitialspace, skiprows, skipfooter, nrows, na_values, keep_default_na, na_filter, verbose, skip_blank_lines, parse_dates, infer_datetime_format, keep_date_col, date_parser, date_format, dayfirst, cache_dates, iterator, chunksize, compression, thousands, decimal, lineterminator, quotechar, quoting, doublequote, escapechar, comment, encoding, encoding_errors, dialect, on_bad_lines, delim_whitespace, low_memory, memory_map, float_precision, storage_options, dtype_backend)[0m
 [1;32m    899[0m kwds_defaults [38;5;241m=[39m _refine_defaults_read(
@@ -89,5 +180,5 @@ File [0;32m/opt/hostedtoolcache/Python/3.8.18/x64/lib/python3.8/site-packages/p
 [1;32m    867[0m         [38;5;66;03m# Binary mode[39;00m
 [1;32m    868[0m         handle [38;5;241m=[39m [38;5;28mopen[39m(handle, ioargs[38;5;241m.[39mmode)
 
-[0;31mFileNotFoundError[0m: [Errno 2] No such file or directory: 'unemployment_rate_data_corrected.csv'
+[0;31mFileNotFoundError[0m: [Errno 2] No such file or directory: 'unemployment_rate_data.csv'
 

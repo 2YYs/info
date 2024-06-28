@@ -3,4 +3,5 @@ matplotlib
 seaborn
 plotly
 ipywidgets
+jupyter_sphinx
 jupyter-book

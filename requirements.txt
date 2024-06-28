@@ -7,3 +7,4 @@ jupyter-book>=0.12
 jupyter_sphinx
 nbsphinx
 pydeck
+sphinx-togglebutton

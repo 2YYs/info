@@ -2,4 +2,7 @@
 # Learn more at https://jupyterbook.org/customize/toc.html
 
 format: jb-book
-root: notebooks.ipynb
+root: notebooks
+
+chapters:
+  - file: notebooks
